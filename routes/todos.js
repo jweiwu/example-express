@@ -1,35 +1,35 @@
 var express = require('express');
 var router = express.Router();
 
-var db = require('../dao/firebase');
+var { getTodos, getTodoById, createTodo, updateTodo, deleteTodo } = require('../services/todos_service');
 
 router.get('/', async function(req, res, next) {
-    const data = await db.ref('todos').once('value');
-    res.json(data);
+    const todos = await getTodos();
+    res.json(todos);
 });
 
 router.get('/:id', async function(req, res, next) {
     const id = req.params.id;
-    const data = await db.ref(`todos/${id}`).once('value');
-    res.json(data);
+    const todo = await getTodoById(id);
+    res.json(todo);
 });
 
 router.post('/', async function(req, res, next) {
     const data = req.body;
-    const todo = await db.ref('todos').push(data);
+    const todo = await createTodo(data);
     res.status(201).json(todo);
 });
 
 router.put('/:id', async function(req, res, next) {
     const id = req.params.id;
     const data = req.body;
-    await db.ref(`todos/${id}`).update(data);
+    await updateTodo(id, data);
     res.status(204).json();
 });
 
 router.delete('/:id', async function(req, res, next) {
     const id = req.params.id
-    await db.ref(`todos/${id}`).remove();
+    await deleteTodo(id);
     res.status(204).json();
 });
 
